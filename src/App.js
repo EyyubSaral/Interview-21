@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { StaticRouter } from "react-router/server";
-import { Link, Routes, Route } from "react-router-dom";
+import { Link, BrowserRouter, Routes, Route } from "react-router-dom";
 
-function App({ location, navigate }) {
+function App() {
   return (
-    <StaticRouter location={location}>
+    <BrowserRouter>
       <nav className="p-4 bg-gray-200 flex justify-center">
         <Link to="/captcha">
           <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
@@ -12,12 +11,13 @@ function App({ location, navigate }) {
           </button>
         </Link>
       </nav>
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/protectedPage" element={<ProtectedPage />} />
-        <Route path="/captcha" element={<Captcha navigate={navigate} />} />
+        <Route path="/captcha" element={<Captcha />} />
       </Routes>
-    </StaticRouter>
+    </BrowserRouter>
   );
 }
 
@@ -39,7 +39,7 @@ const ProtectedPage = () => (
   </div>
 );
 
-const Captcha = ({ navigate }) => {
+const Captcha = () => {
   const [randomNumber, setRandomNumber] = useState(
     Math.floor(Math.random() * 6) + 1
   );
@@ -47,11 +47,11 @@ const Captcha = ({ navigate }) => {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (typeof document !== "undefined") {
-      console.log("Tarayıcı ortamında çalışıyor.");
-    } else {
-      console.log("Node.js ortamında çalışıyor, document kullanılamaz.");
-    }
+    console.log(
+      typeof document !== "undefined"
+        ? "Tarayıcı ortamında çalışıyor."
+        : "Node.js ortamında çalışıyor, document kullanılamaz."
+    );
   }, []);
 
   const checkCaptcha = () => {
@@ -59,7 +59,7 @@ const Captcha = ({ navigate }) => {
     setMessage(isValid ? "✅ Doğru!" : "❌ Yanlış, tekrar deneyin.");
 
     if (isValid) {
-      setTimeout(() => navigate("/protectedPage"), 1000);
+      setTimeout(() => (window.location.href = "/protectedPage"), 1000);
     }
   };
 
