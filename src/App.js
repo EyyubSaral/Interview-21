@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { Link, BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -45,14 +46,6 @@ const Captcha = () => {
   );
   const [inputValue, setInputValue] = useState("");
   const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    console.log(
-      typeof document !== "undefined"
-        ? "Tarayıcı ortamında çalışıyor."
-        : "Node.js ortamında çalışıyor, document kullanılamaz."
-    );
-  }, []);
 
   const checkCaptcha = () => {
     const isValid = Number(inputValue) === randomNumber;
