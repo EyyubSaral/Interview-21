@@ -1,12 +1,23 @@
-import React, { useState } from "react";
+import { JSDOM } from "jsdom";
+import React, { useState, useEffect } from "react";
+import { renderToString } from "react-dom/server";
 import {
   BrowserRouter,
   Link,
   Routes,
   Route,
-  Navigate,
   useNavigate,
 } from "react-router-dom";
+
+// 📌 **Tarayıcı ortamını Node.js içinde simüle etme**
+const dom = new JSDOM(`<!DOCTYPE html><body></body>`);
+global.window = dom.window;
+global.document = dom.window.document;
+
+// 📌 **React bileşenini Node.js içinde render etme**
+const MyComponent = () => <h1>Merhaba, Dünya!</h1>;
+const html = renderToString(<MyComponent />);
+console.log(html); // Sunucu tarafında bileşeni render eder
 
 function App() {
   return (
@@ -55,14 +66,22 @@ const Captcha = () => {
   );
   const [inputValue, setInputValue] = useState("");
   const [message, setMessage] = useState("");
-  const navigate = useNavigate(); // useNavigate ile yönlendirme yapacağız.
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      console.log("Tarayıcı ortamında çalışıyor.");
+    } else {
+      console.log("Node.js ortamında çalışıyor, document kullanılamaz.");
+    }
+  }, []);
 
   const checkCaptcha = () => {
     const isValid = Number(inputValue) === randomNumber;
     setMessage(isValid ? "✅ Doğru!" : "❌ Yanlış, tekrar deneyin.");
 
     if (isValid) {
-      setTimeout(() => navigate("/protectedPage"), 1000); // 1 saniye sonra yönlendir
+      setTimeout(() => navigate("/protectedPage"), 1000);
     }
   };
 
