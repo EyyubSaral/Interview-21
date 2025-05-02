@@ -1,27 +1,10 @@
-import { JSDOM } from "jsdom";
 import React, { useState, useEffect } from "react";
-import { renderToString } from "react-dom/server";
-import {
-  BrowserRouter,
-  Link,
-  Routes,
-  Route,
-  useNavigate,
-} from "react-router-dom";
+import { StaticRouter } from "react-router-dom/server";
+import { Link, Routes, Route } from "react-router-dom";
 
-// 📌 **Tarayıcı ortamını Node.js içinde simüle etme**
-const dom = new JSDOM(`<!DOCTYPE html><body></body>`);
-global.window = dom.window;
-global.document = dom.window.document;
-
-// 📌 **React bileşenini Node.js içinde render etme**
-const MyComponent = () => <h1>Merhaba, Dünya!</h1>;
-const html = renderToString(<MyComponent />);
-console.log(html); // Sunucu tarafında bileşeni render eder
-
-function App() {
+function App({ location, navigate }) {
   return (
-    <BrowserRouter>
+    <StaticRouter location={location}>
       <nav className="p-4 bg-gray-200 flex justify-center">
         <Link to="/captcha">
           <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
@@ -32,41 +15,36 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/protectedPage" element={<ProtectedPage />} />
-        <Route path="/captcha" element={<Captcha />} />
+        <Route path="/captcha" element={<Captcha navigate={navigate} />} />
       </Routes>
-    </BrowserRouter>
+    </StaticRouter>
   );
 }
 
-const Home = () => {
-  return (
-    <div className="text-center mt-10">
-      <h1 className="text-2xl font-bold">Ana Sayfa</h1>
-      <p>Korunan sayfaya gitmek için Captcha'yı geçmeniz gerekiyor.</p>
-    </div>
-  );
-};
+const Home = () => (
+  <div className="text-center mt-10">
+    <h1 className="text-2xl font-bold">Ana Sayfa</h1>
+    <p>Korunan sayfaya gitmek için Captcha'yı geçmeniz gerekiyor.</p>
+  </div>
+);
 
-const ProtectedPage = () => {
-  return (
-    <div className="text-center mt-10">
-      <h1 className="text-2xl font-bold">✅ Korunan Sayfa</h1>
-      <Link to="/">
-        <button className="mt-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
-          Ana Sayfaya Dön
-        </button>
-      </Link>
-    </div>
-  );
-};
+const ProtectedPage = () => (
+  <div className="text-center mt-10">
+    <h1 className="text-2xl font-bold">✅ Korunan Sayfa</h1>
+    <Link to="/">
+      <button className="mt-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
+        Ana Sayfaya Dön
+      </button>
+    </Link>
+  </div>
+);
 
-const Captcha = () => {
+const Captcha = ({ navigate }) => {
   const [randomNumber, setRandomNumber] = useState(
     Math.floor(Math.random() * 6) + 1
   );
   const [inputValue, setInputValue] = useState("");
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (typeof document !== "undefined") {
