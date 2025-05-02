@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StaticRouter } from "react-router-dom/server";
+import { StaticRouter } from "react-router/server";
 import { Link, Routes, Route } from "react-router-dom";
 
 function App({ location, navigate }) {
